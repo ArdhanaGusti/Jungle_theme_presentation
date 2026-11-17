@@ -294,7 +294,7 @@
         inset: 0;
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: contain;
       }
       .pic span {
         font-size: 1.25cqw;
@@ -389,10 +389,60 @@
         padding: 0.5cqh 1cqw;
         border-radius: 2cqw;
       }
+      .credit {
+        position: absolute;
+        left: 2cqw;
+        bottom: 2.4cqh;
+        z-index: 4;
+        font-size: 1.2cqw;
+        letter-spacing: 0.1cqw;
+        color: #fffdf0;
+        opacity: 0.88;
+        text-shadow: 0 0.1cqw 0.4cqw rgba(0, 0, 0, 0.65);
+        pointer-events: none;
+        max-width: 26cqw;
+      }
+      /* 4-5 photos per slide (landscape): cards shrink to fit one row */
+      @media (min-aspect-ratio: 1/1) {
+        .cards[data-n="4"] {
+          gap: 2.4cqw;
+        }
+        .cards[data-n="5"] {
+          gap: 1.8cqw;
+        }
+        .cards[data-n="4"] .card {
+          width: 20cqw;
+          padding: 1cqw 1cqw 1.3cqw;
+        }
+        .cards[data-n="5"] .card {
+          width: 16.6cqw;
+          padding: 0.9cqw 0.9cqw 1.2cqw;
+        }
+        .cards[data-n="4"] .cap {
+          font-size: 1.55cqw;
+        }
+        .cards[data-n="5"] .cap {
+          font-size: 1.3cqw;
+        }
+        .cards[data-n="4"] .pic span,
+        .cards[data-n="5"] .pic span {
+          font-size: 1cqw;
+        }
+        .cards[data-n="4"] .pic .em,
+        .cards[data-n="5"] .pic .em {
+          font-size: 2.6cqw;
+        }
+      }
       /* Tablet + phone in portrait: stage fills the screen, text and controls scale up */
       @media (max-aspect-ratio: 1/1) {
         #root {
           height: 100dvh;
+        }
+        .credit {
+          font-size: 2.2cqw;
+          left: 3cqw;
+          bottom: 6.5cqh;
+          max-width: 60cqw;
         }
         .stage {
           width: 100vw;
@@ -422,6 +472,11 @@
         .cards {
           gap: 2.6cqw;
           margin-top: 4cqh;
+          flex-wrap: wrap;
+          max-width: 94cqw;
+        }
+        .cards[data-n="4"] .card {
+          width: 40cqw;
         }
         .card {
           width: 29cqw;
@@ -465,6 +520,10 @@
         h2 {
           font-size: 9.5cqw;
         }
+        .credit {
+          font-size: 3.2cqw;
+          bottom: 8.5cqh;
+        }
         .sub {
           font-size: 4cqw;
         }
@@ -482,6 +541,20 @@
           align-items: center;
           gap: 4cqw;
           margin-top: 3cqh;
+        }
+        .cards[data-n="4"],
+        .cards[data-n="5"] {
+          flex-direction: row;
+          align-items: flex-start;
+          max-width: 92cqw;
+        }
+        .cards[data-n="4"] .card,
+        .cards[data-n="5"] .card {
+          width: 41cqw;
+        }
+        .cards[data-n="4"] .cap,
+        .cards[data-n="5"] .cap {
+          font-size: 4.2cqw;
         }
         .card {
           width: 46cqw;
@@ -539,20 +612,25 @@
    NOTE: on this hosted page only data: URIs work for images; in your own project any path/URL works.
 ================================================================ */
       const CONFIG = {
+        credit: "Made by Ardhana", // small text at the bottom-left of every slide (set "" to hide)
         opening: {
-          title: ["JUNGLE ADVENTURE", "EXPEDITION 2026"],
+          title: ["ISTD PLANNING CYCLE", "PTA 2026"],
           subtitle: "THE MAGIC OF THE WILD",
         },
         // Each object in `contents` is one content slide. To ADD a slide, copy one { ... } block and paste it
-        // after the last one (with a comma). To REMOVE a slide, delete its block. Use 2-3 photos per slide.
+        // after the last one (with a comma). To REMOVE a slide, delete its block. Use 2-5 photos per slide.
         contents: [
           {
-            header: "JUNGLE ADVENTURE EXPEDITION 2026",
-            title: "OUR JOURNEY",
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "COFFEE BREAK",
+            photos: [],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "GREETING FROM MANAGEMENT",
             photos: [
-              { src: "", caption: "Into the Canopy" },
-              { src: "", caption: "River Crossing" },
-              { src: "", caption: "Wild Encounters" },
+              { src: "https://passport.toyota.astra.co.id:3001/app/Handlers/ThumbnailHandler.ashx?p=101813", caption: "Wilbertus Darmadi" },
+              { src: "https://passport.toyota.astra.co.id:3001/app/Handlers/ThumbnailHandler.ashx?p=102413", caption: "Hideaki Nonaka" },
             ],
           },
         ],
@@ -738,9 +816,9 @@
       }
 
       function Content({ data }) {
-        const photos = data.photos,
-          em = ["🌴", "🛶", "🦁"],
-          tilt = ["-2.5deg", "1.2deg", "-1.2deg"];
+        const photos = data.photos.slice(0, 5),
+          em = ["🌴", "🛶", "🦁", "🦜", "🐒"],
+          tilt = ["-2.5deg", "1.2deg", "-1.2deg", "2deg", "-1.8deg"];
         return h(
           "div",
           { className: "slide" },
@@ -752,16 +830,16 @@
           ),
           h(
             "div",
-            { className: "cards" },
+            { className: "cards", "data-n": photos.length },
             photos.map((p, i) =>
               h(
                 "div",
                 {
                   key: i,
                   className: "card",
-                  style: { "--t": tilt[i % 3], "--i": i },
+                  style: { "--t": tilt[i % 5], "--i": i },
                 },
-                h(Pic, { src: p.src, emoji: em[i % 3] }),
+                h(Pic, { src: p.src, emoji: em[i % 5] }),
                 h(Editable, { cls: "cap", text: p.caption }),
               ),
             ),
@@ -844,6 +922,9 @@
             },
           },
           h(Scenery),
+          CONFIG.credit
+            ? h("div", { className: "credit" }, CONFIG.credit)
+            : null,
           h(
             "div",
             {
