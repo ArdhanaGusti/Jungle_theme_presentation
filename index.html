@@ -46,6 +46,7 @@
         width: min(100vw, 177.78vh);
         aspect-ratio: 16/9;
         container-type: size;
+        touch-action: pan-y;
         overflow: hidden;
         background: radial-gradient(
           120% 90% at 50% 0%,
@@ -388,6 +389,135 @@
         padding: 0.5cqh 1cqw;
         border-radius: 2cqw;
       }
+      /* Tablet + phone in portrait: stage fills the screen, text and controls scale up */
+      @media (max-aspect-ratio: 1/1) {
+        #root {
+          height: 100dvh;
+        }
+        .stage {
+          width: 100vw;
+          height: 100%;
+          aspect-ratio: auto;
+        }
+        .brush {
+          padding: 4cqh 7cqw;
+          max-width: 90cqw;
+        }
+        h1 {
+          font-size: 9.5cqw;
+          text-wrap: balance;
+        }
+        h2 {
+          font-size: 7.5cqw;
+        }
+        .sub {
+          font-size: 2.8cqw;
+          letter-spacing: 0.3cqw;
+          margin-top: 2cqh;
+        }
+        .top {
+          font-size: 2.8cqw;
+          top: 4cqh;
+        }
+        .cards {
+          gap: 2.6cqw;
+          margin-top: 4cqh;
+        }
+        .card {
+          width: 29cqw;
+          padding: 1.5cqw 1.5cqw 2cqw;
+          border-radius: 1.2cqw;
+        }
+        .cap {
+          font-size: 2.8cqw;
+        }
+        .pic span {
+          font-size: 2.1cqw;
+        }
+        .pic .em {
+          font-size: 6cqw;
+        }
+        .row .bounce {
+          font-size: 10cqw !important;
+        }
+        .fly {
+          width: 1.6cqw;
+          height: 1.6cqw;
+        }
+        .ui {
+          gap: 2cqw;
+        }
+        .ui button {
+          font-size: 2.6cqw;
+          padding: 1cqh 3cqw;
+        }
+        .ui .dot {
+          width: 2.2cqw !important;
+          height: 2.2cqw !important;
+          padding: 0 !important;
+        }
+      }
+      /* Phone in portrait: cards stack in a column, content slide scrolls if needed */
+      @media (max-aspect-ratio: 5/8) {
+        h1 {
+          font-size: 11cqw;
+        }
+        h2 {
+          font-size: 9.5cqw;
+        }
+        .sub {
+          font-size: 4cqw;
+        }
+        .top {
+          font-size: 3.6cqw;
+          width: 90cqw;
+        }
+        .slide {
+          justify-content: safe center;
+          padding: 9cqh 0 12cqh;
+          overflow-y: auto;
+        }
+        .cards {
+          flex-direction: column;
+          align-items: center;
+          gap: 4cqw;
+          margin-top: 3cqh;
+        }
+        .card {
+          width: 46cqw;
+        }
+        .cap {
+          font-size: 5cqw;
+        }
+        .pic span {
+          font-size: 3.2cqw;
+        }
+        .pic .em {
+          font-size: 9cqw;
+        }
+        .row .bounce {
+          font-size: 14cqw !important;
+        }
+        .ui button {
+          font-size: 4cqw;
+          padding: 1.2cqh 4.5cqw;
+        }
+        .ui .dot {
+          width: 3.2cqw !important;
+          height: 3.2cqw !important;
+        }
+      }
+      /* Touch screens: larger tap targets in landscape too */
+      @media (pointer: coarse) and (min-aspect-ratio: 1/1) {
+        .ui button {
+          font-size: 2cqw;
+          padding: 1.2cqh 2.4cqw;
+        }
+        .ui .dot {
+          width: 1.8cqw !important;
+          height: 1.8cqw !important;
+        }
+      }
       @media (prefers-reduced-motion: reduce) {
         * {
           animation-duration: 0.01s !important;
@@ -423,14 +553,6 @@
               { src: "", caption: "Into the Canopy" },
               { src: "", caption: "River Crossing" },
               { src: "", caption: "Wild Encounters" },
-            ],
-          },
-          {
-            header: "JUNGLE ADVENTURE EXPEDITION 2026",
-            title: "OUR JOURNEY",
-            photos: [
-              { src: "", caption: "Into the Canopy" },
-              { src: "", caption: "River Crossing" },
             ],
           },
         ],
@@ -678,6 +800,7 @@
       const TOTAL = CONFIG.contents.length + 2; // opening + content slides + closing
       function App() {
         const [i, setI] = useState(0);
+        const tx = React.useRef(null);
         const go = useCallback(
           (n) =>
             setI((c) =>
@@ -708,7 +831,18 @@
             : document.documentElement.requestFullscreen().catch(() => {});
         return h(
           "div",
-          { className: "stage" },
+          {
+            className: "stage",
+            onTouchStart: (e) => {
+              tx.current = e.touches[0].clientX;
+            },
+            onTouchEnd: (e) => {
+              if (tx.current == null) return;
+              const dx = e.changedTouches[0].clientX - tx.current;
+              tx.current = null;
+              if (Math.abs(dx) > 50) go((c) => c + (dx < 0 ? 1 : -1));
+            },
+          },
           h(Scenery),
           h(
             "div",
