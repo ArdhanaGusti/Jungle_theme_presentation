@@ -343,7 +343,8 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 1.4cqw;
+        --g: 1.4cqw;
+        gap: var(--g);
         z-index: 5;
       }
       .ui button {
@@ -378,6 +379,19 @@
         background: var(--sun) !important;
         transform: scale(1.35);
       }
+      /* Slide dots: max 10 per row, extra dots wrap to the next row */
+      .dots {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: calc(var(--g) * 0.6);
+      }
+      .dotrow {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: var(--g);
+      }
       .hint {
         position: absolute;
         right: 1.2cqw;
@@ -392,7 +406,7 @@
       .credit {
         position: absolute;
         left: 2cqw;
-        bottom: 2.4cqh;
+        top: 2.4cqh;
         z-index: 4;
         font-size: 1.2cqw;
         letter-spacing: 0.1cqw;
@@ -401,6 +415,116 @@
         text-shadow: 0 0.1cqw 0.4cqw rgba(0, 0, 0, 0.65);
         pointer-events: none;
         max-width: 26cqw;
+      }
+      /* Video content slide */
+      .vframe {
+        --t: -1deg;
+        position: relative;
+        margin-top: 3.5cqh;
+        width: 54cqw;
+        background: var(--paper);
+        padding: 1.2cqw 1.2cqw 1.4cqw;
+        border-radius: 0.8cqw;
+        box-shadow: 0 1.2cqw 2.4cqw rgba(0, 0, 0, 0.35);
+        animation: drop 0.9s 0.4s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+      }
+      .vframe::before {
+        content: "";
+        position: absolute;
+        top: -1.4cqw;
+        left: 50%;
+        width: 6cqw;
+        height: 2.4cqw;
+        margin-left: -3cqw;
+        background: rgba(244, 197, 66, 0.75);
+        transform: rotate(-3deg);
+        z-index: 2;
+      }
+      .vframe video {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16/9;
+        background: #0a1f12;
+        border-radius: 0.5cqw;
+        object-fit: contain;
+      }
+      .vph {
+        aspect-ratio: 16/9;
+        display: grid;
+        place-content: center;
+        gap: 0.6cqw;
+        text-align: center;
+        font-weight: 600;
+        font-size: 1.6cqw;
+        color: var(--ink);
+        border-radius: 0.5cqw;
+        background: repeating-linear-gradient(
+          45deg,
+          #cfe8b8 0 1.2cqw,
+          #bde0a2 1.2cqw 2.4cqw
+        );
+      }
+      .vph .em {
+        font-size: 5cqw;
+      }
+      .vfs {
+        all: unset;
+        cursor: pointer;
+        position: absolute;
+        top: 2.2cqw;
+        right: 2.2cqw;
+        z-index: 3;
+        background: rgba(12, 59, 34, 0.8);
+        color: var(--ui);
+        font-family: "Lilita One", sans-serif;
+        font-size: 1.3cqw;
+        padding: 0.5cqw 1.1cqw;
+        border-radius: 3cqw;
+        opacity: 0;
+        transition:
+          opacity 0.2s,
+          background 0.2s;
+      }
+      .vframe:hover .vfs,
+      .vfs:focus-visible {
+        opacity: 1;
+      }
+      .vfs:hover {
+        background: var(--leaf);
+      }
+      @media (hover: none) {
+        .vfs {
+          opacity: 1;
+        }
+      }
+      .vframe:fullscreen {
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        border-radius: 0;
+        background: #000;
+        animation: none;
+        transform: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .vframe:fullscreen::before,
+      .vframe:fullscreen .vcap {
+        display: none;
+      }
+      .vframe:fullscreen video {
+        width: 100%;
+        height: 100%;
+        aspect-ratio: auto;
+        border-radius: 0;
+      }
+      .vframe:fullscreen .vfs {
+        top: 2vh;
+        right: 2vw;
+        font-size: max(14px, 1.3vw);
+        padding: 0.5vw 1.2vw;
       }
       /* 4-5 photos per slide (landscape): cards shrink to fit one row */
       @media (min-aspect-ratio: 1/1) {
@@ -441,8 +565,23 @@
         .credit {
           font-size: 2.2cqw;
           left: 3cqw;
-          bottom: 6.5cqh;
+          top: 1.5cqh;
           max-width: 60cqw;
+        }
+        .vframe {
+          width: 88cqw;
+          margin-top: 4cqh;
+          padding: 1.6cqw 1.6cqw 1.8cqw;
+          border-radius: 1.2cqw;
+        }
+        .vph {
+          font-size: 2.6cqw;
+        }
+        .vfs {
+          font-size: 2.4cqw;
+          top: 3cqw;
+          right: 3cqw;
+          padding: 1cqw 2cqw;
         }
         .stage {
           width: 100vw;
@@ -500,7 +639,7 @@
           height: 1.6cqw;
         }
         .ui {
-          gap: 2cqw;
+          --g: 2cqw;
         }
         .ui button {
           font-size: 2.6cqw;
@@ -521,8 +660,19 @@
           font-size: 9.5cqw;
         }
         .credit {
-          font-size: 3.2cqw;
-          bottom: 8.5cqh;
+          font-size: 3cqw;
+          top: 1.5cqh;
+        }
+        .vframe {
+          width: 92cqw;
+        }
+        .vph {
+          font-size: 3.6cqw;
+        }
+        .vfs {
+          font-size: 3.4cqw;
+          top: 3.5cqw;
+          right: 3.5cqw;
         }
         .sub {
           font-size: 4cqw;
@@ -530,6 +680,7 @@
         .top {
           font-size: 3.6cqw;
           width: 90cqw;
+          top: 6cqh;
         }
         .slide {
           justify-content: safe center;
@@ -612,7 +763,7 @@
    NOTE: on this hosted page only data: URIs work for images; in your own project any path/URL works.
 ================================================================ */
       const CONFIG = {
-        credit: "Made by Ardhana", // small text at the bottom-left of every slide (set "" to hide)
+        credit: "Made by Ardhana", // small text at the top-left of every slide (set "" to hide)
         opening: {
           title: ["ISTD PLANNING CYCLE", "PTA 2026"],
           subtitle: "THE MAGIC OF THE WILD",
@@ -629,9 +780,266 @@
             header: "ISTD PLANNING CYCLE & PTA 2026",
             title: "GREETING FROM MANAGEMENT",
             photos: [
-              { src: "https://passport.toyota.astra.co.id:3001/app/Handlers/ThumbnailHandler.ashx?p=101813", caption: "Wilbertus Darmadi" },
-              { src: "https://passport.toyota.astra.co.id:3001/app/Handlers/ThumbnailHandler.ashx?p=102413", caption: "Hideaki Nonaka" },
+              { src: "./assets/wid.jpg", caption: "Wilbertus Darmadi" },
+              { src: "./assets/hin.jpg", caption: "Hideaki Nonaka" },
             ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "SYSTEM OPERATION",
+            photos: [
+              { src: "./assets/mik.jpg", caption: "Maickel Pebriano Pandie" },
+              { src: "./assets/iqr.jpg", caption: "Iqbal Razi" },
+              { src: "./assets/feg.jpg", caption: "Feri Gunawan" },
+              { src: "./assets/kmr.jpg", caption: "Keke Mulia Rahmawati" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "SYSTEM OPERATION Q&A",
+            photos: [],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "FRIDAY PRAYER & LUNCH",
+            photos: [],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "SYSTEM & INFRA DEV",
+            photos: [
+              { src: "./assets/ssn.jpg", caption: "Stevanus Setyo Nugroho" },
+              { src: "./assets/dsp.jpg", caption: "Dhany Setia Purnama" },
+              { src: "./assets/nrp.jpg", caption: "Nanda Riski Permana" },
+              { src: "./assets/anr.jpg", caption: "Anna Rosalina" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "SYSTEM & INFRA DEV Q&A",
+            photos: [],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "FREE TALK",
+            photos: [],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "FREE TALK Q&A",
+            photos: [],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "COFFEE BREAK AND ASHAR PRAYER",
+            photos: [],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "DOORPRIZE (1)",
+            photos: [
+              { src: "", caption: "Doorprize 1" },
+              { src: "", caption: "Doorprize 2" },
+              { src: "", caption: "Doorprize 3" },
+              { src: "", caption: "Doorprize 4" },
+              { src: "", caption: "Doorprize 5" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "DOORPRIZE (2)",
+            photos: [
+              { src: "", caption: "Doorprize 1" },
+              { src: "", caption: "Doorprize 2" },
+              { src: "", caption: "Doorprize 3" },
+              { src: "", caption: "Doorprize 4" },
+              { src: "", caption: "Doorprize 5" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "DOORPRIZE (3)",
+            photos: [
+              { src: "", caption: "Doorprize 1" },
+              { src: "", caption: "Doorprize 2" },
+              { src: "", caption: "Doorprize 3" },
+              { src: "", caption: "Doorprize 4" },
+              { src: "", caption: "Doorprize 5" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "DOORPRIZE (4)",
+            photos: [
+              { src: "", caption: "Doorprize 1" },
+              { src: "", caption: "Doorprize 2" },
+              { src: "", caption: "Doorprize 3" },
+              { src: "", caption: "Doorprize 4" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "AWARDING 1",
+            photos: [
+              { src: "", caption: "Stevanus Setyo Nugroho" },
+              { src: "", caption: "Dhany Setia Purnama" },
+              { src: "", caption: "Nanda Riski Permana" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "WINNER AWARDING 1",
+            photos: [
+              { src: "", caption: "Stevanus Setyo Nugroho" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "AWARDING 2",
+            photos: [
+              { src: "", caption: "Stevanus Setyo Nugroho" },
+              { src: "", caption: "Dhany Setia Purnama" },
+              { src: "", caption: "Nanda Riski Permana" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "WINNER AWARDING 2",
+            photos: [
+              { src: "", caption: "Stevanus Setyo Nugroho" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "AWARDING 3",
+            photos: [
+              { src: "", caption: "Stevanus Setyo Nugroho" },
+              { src: "", caption: "Dhany Setia Purnama" },
+              { src: "", caption: "Nanda Riski Permana" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "WINNER AWARDING 3",
+            photos: [
+              { src: "", caption: "Stevanus Setyo Nugroho" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "AWARDING 4",
+            photos: [
+              { src: "", caption: "Stevanus Setyo Nugroho" },
+              { src: "", caption: "Dhany Setia Purnama" },
+              { src: "", caption: "Nanda Riski Permana" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "WINNER AWARDING 4",
+            photos: [
+              { src: "", caption: "Stevanus Setyo Nugroho" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "AWARDING 5",
+            photos: [
+              { src: "", caption: "Stevanus Setyo Nugroho" },
+              { src: "", caption: "Dhany Setia Purnama" },
+              { src: "", caption: "Nanda Riski Permana" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "WINNER AWARDING 5",
+            photos: [
+              { src: "", caption: "Stevanus Setyo Nugroho" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "AWARDING 6",
+            photos: [
+              { src: "", caption: "Stevanus Setyo Nugroho" },
+              { src: "", caption: "Dhany Setia Purnama" },
+              { src: "", caption: "Nanda Riski Permana" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "WINNER AWARDING 6",
+            photos: [
+              { src: "", caption: "Stevanus Setyo Nugroho" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "AWARDING 7",
+            photos: [
+              { src: "", caption: "Stevanus Setyo Nugroho" },
+              { src: "", caption: "Dhany Setia Purnama" },
+              { src: "", caption: "Nanda Riski Permana" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "WINNER AWARDING 7",
+            photos: [
+              { src: "", caption: "Stevanus Setyo Nugroho" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "AWARDING 8",
+            photos: [
+              { src: "", caption: "Stevanus Setyo Nugroho" },
+              { src: "", caption: "Dhany Setia Purnama" },
+              { src: "", caption: "Nanda Riski Permana" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "WINNER AWARDING 8",
+            photos: [
+              { src: "", caption: "Stevanus Setyo Nugroho" },
+            ],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "VIDEO SHOWING",
+            video: {
+              src: "./assets/video.mp4",
+              poster: "",
+              caption: "",
+              autoplay: false,
+              loop: false,
+            },
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "AMAZING RACE",
+            photos: [],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "FREE TIME",
+            photos: [],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "DINNER & LIVE COOKING",
+            photos: [],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "BONFIRE, CHILL & STARLING",
+            photos: [],
+          },
+          {
+            header: "ISTD PLANNING CYCLE & PTA 2026",
+            title: "FREE TIME",
+            photos: [],
           },
         ],
         closing: {
@@ -815,8 +1223,76 @@
         );
       }
 
+      function VideoPlayer({ video }) {
+        const box = React.useRef(null),
+          vid = React.useRef(null),
+          [isFs, setIsFs] = useState(false);
+        useEffect(() => {
+          const on = () =>
+            setIsFs(
+              (document.fullscreenElement ||
+                document.webkitFullscreenElement) === box.current,
+            );
+          document.addEventListener("fullscreenchange", on);
+          document.addEventListener("webkitfullscreenchange", on);
+          return () => {
+            document.removeEventListener("fullscreenchange", on);
+            document.removeEventListener("webkitfullscreenchange", on);
+          };
+        }, []);
+        const toggleFs = () => {
+          const el = box.current,
+            v = vid.current;
+          if (document.fullscreenElement || document.webkitFullscreenElement)
+            (document.exitFullscreen || document.webkitExitFullscreen).call(
+              document,
+            );
+          else if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+          else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+          else if (v && v.webkitEnterFullscreen) v.webkitEnterFullscreen(); // iPhone Safari
+        };
+        const stop = (e) => e.stopPropagation(); // no slide swipe while using the player
+        return h(
+          "div",
+          { className: "vframe", ref: box, onTouchStart: stop, onTouchEnd: stop },
+          video.src
+            ? h("video", {
+                ref: vid,
+                src: video.src,
+                poster: video.poster || undefined,
+                controls: true,
+                playsInline: true,
+                preload: "metadata",
+                autoPlay: !!video.autoplay,
+                muted: !!video.autoplay,
+                loop: !!video.loop,
+                onDoubleClick: toggleFs,
+              })
+            : h(
+                "div",
+                { className: "vph" },
+                h("b", { className: "em" }, "🎬"),
+                "Set video.src in CONFIG",
+              ),
+          video.src
+            ? h(
+                "button",
+                {
+                  className: "vfs",
+                  onClick: toggleFs,
+                  "aria-label": "Toggle video fullscreen",
+                },
+                isFs ? "✕ Exit" : "⛶ Fullscreen",
+              )
+            : null,
+          video.caption
+            ? h("div", { className: "cap vcap" }, video.caption)
+            : null,
+        );
+      }
+
       function Content({ data }) {
-        const photos = data.photos.slice(0, 5),
+        const photos = (data.photos || []).slice(0, 5),
           em = ["🌴", "🛶", "🦁", "🦜", "🐒"],
           tilt = ["-2.5deg", "1.2deg", "-1.2deg", "2deg", "-1.8deg"];
         return h(
@@ -828,7 +1304,9 @@
             { className: "brush", style: { padding: "2.6cqh 6cqw" } },
             h(Editable, { tag: "h2", text: data.title }),
           ),
-          h(
+          data.video
+            ? h(VideoPlayer, { video: data.video })
+            : h(
             "div",
             { className: "cards", "data-n": photos.length },
             photos.map((p, i) =>
@@ -876,6 +1354,7 @@
       }
 
       const TOTAL = CONFIG.contents.length + 2; // opening + content slides + closing
+      const DOTS_PER_ROW = 10; // dots per row; more slides wrap to the next row
       function App() {
         const [i, setI] = useState(0);
         const tx = React.useRef(null);
@@ -891,7 +1370,12 @@
         );
         useEffect(() => {
           const k = (e) => {
-            if (e.target.isContentEditable) return;
+            if (
+              e.target.isContentEditable ||
+              e.target.tagName === "VIDEO" ||
+              (e.key === " " && e.target.tagName === "BUTTON")
+            )
+              return;
             if (["ArrowRight", "PageDown", " "].includes(e.key))
               go((c) => c + 1);
             if (["ArrowLeft", "PageUp"].includes(e.key)) go((c) => c - 1);
@@ -946,13 +1430,27 @@
               { onClick: () => go(i - 1), "aria-label": "Previous slide" },
               "◀ Back",
             ),
-            Array.from({ length: TOTAL }, (_, k) =>
-              h("button", {
-                key: k,
-                className: "dot" + (k === i ? " on" : ""),
-                onClick: () => go(k),
-                "aria-label": "Slide " + (k + 1),
-              }),
+            h(
+              "div",
+              { className: "dots" },
+              Array.from({ length: Math.ceil(TOTAL / DOTS_PER_ROW) }, (_, r) =>
+                h(
+                  "div",
+                  { key: r, className: "dotrow" },
+                  Array.from(
+                    { length: Math.min(DOTS_PER_ROW, TOTAL - r * DOTS_PER_ROW) },
+                    (_, c) => {
+                      const k = r * DOTS_PER_ROW + c;
+                      return h("button", {
+                        key: k,
+                        className: "dot" + (k === i ? " on" : ""),
+                        onClick: () => go(k),
+                        "aria-label": "Slide " + (k + 1),
+                      });
+                    },
+                  ),
+                ),
+              ),
             ),
             h(
               "button",
